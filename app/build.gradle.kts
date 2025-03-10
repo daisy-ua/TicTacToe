@@ -1,3 +1,6 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -8,6 +11,10 @@ plugins {
 android {
     namespace = "com.daisy.tictactoe"
     compileSdk = 35
+
+    val apikeyPropertiesFile = rootProject.file("apikey.properties")
+    val apikeyProperties = Properties()
+    apikeyProperties.load(FileInputStream(apikeyPropertiesFile))
 
     defaultConfig {
         applicationId = "com.daisy.tictactoe"
@@ -20,6 +27,7 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+        buildConfigField("String", "GAME_ADDRESS", apikeyProperties["GAME_ADDRESS"].toString())
     }
 
     buildTypes {
@@ -80,10 +88,12 @@ dependencies {
     implementation(libs.kotlin.serialization)
 
     implementation(libs.koin.compose)
-    testImplementation(libs.koin.test)
+    implementation(libs.koin.core)
 
     implementation(libs.ktor.core)
     implementation(libs.ktor.cio)
     implementation(libs.ktor.websockets)
     implementation(libs.ktor.logging)
+    implementation(libs.ktor.content.negotiation)
+    implementation(libs.ktor.serialization.json)
 }
