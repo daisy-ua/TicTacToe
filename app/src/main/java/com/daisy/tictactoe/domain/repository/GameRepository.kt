@@ -6,7 +6,9 @@ import kotlinx.coroutines.flow.Flow
 
 interface GameRepository {
 
-    fun getGameStateStream(): Flow<GameState>
+    suspend fun createRoom(): String?
+
+    fun getGameStateStream(roomId: String): Flow<GameState>
 
     suspend fun sendAction(action: Move)
 

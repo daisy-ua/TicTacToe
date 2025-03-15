@@ -1,22 +1,17 @@
 package com.daisy.tictactoe.presentation
 
 import androidx.lifecycle.viewModelScope
+import com.daisy.tictactoe.R
 import com.daisy.tictactoe.core.BaseViewModel
 import com.daisy.tictactoe.core.UiText
-import com.daisy.tictactoe.domain.model.GameState
 import com.daisy.tictactoe.domain.model.Move
 import com.daisy.tictactoe.domain.repository.GameRepository
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 
@@ -24,33 +19,60 @@ class GameViewModel(
     private val repository: GameRepository,
 ) : BaseViewModel<GameUiState, GameAction, GameEffect>(GameUiState()) {
 
-    private val gameState: StateFlow<GameState> = repository
-        .getGameStateStream()
-        .onStart { updateState { copy(isConnecting = true) } }
-        .onCompletion { updateState { copy(isConnecting = false) } }
-        .catch {
-            setEffect {
-                GameEffect.ShowToast(
-                    UiText.Plain(
-                        it.message ?: "Connection failed"
-                    )
-                )
-            }
-
-            updateState { copy(error = it.message ?: "Connection failed with unknown error.") }
-        }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), GameState())
-
     init {
-        updateGameState()
-
         observeOpponentConnection()
     }
 
     override fun onAction(action: GameAction) {
         when (action) {
             is GameAction.MakeMove -> action.apply { handleMove(row, col) }
+            GameAction.CreateRoom -> createRoom()
+            is GameAction.JoinRoom -> joinRoom(action.roomId)
         }
+    }
+
+    private fun createRoom() = viewModelScope.launch {
+        val roomId = repository.createRoom()
+        updateState { copy(roomId = roomId) }
+
+        if (roomId == null) {
+            setEffect {
+                GameEffect.ShowToast(
+                    UiText.Resource(R.string.error_cannot_parse_room_id)
+                )
+            }
+            return@launch
+        }
+
+        joinRoom(roomId)
+    }
+
+    private fun joinRoom(roomId: String) = viewModelScope.launch {
+        updateState { copy(roomId = roomId, isConnecting = true) }
+
+        repository.getGameStateStream(roomId)
+            .catch {
+                setEffect {
+                    val message = it.message?.let {
+                        UiText.Plain(
+                            it
+                        )
+                    } ?: UiText.Resource(R.string.error_connection_failed)
+
+                    GameEffect.ShowToast(message)
+                }
+
+                updateState {
+                    copy(
+                        error = it.message?.let { UiText.Plain(it) }
+                            ?: UiText.Resource(R.string.error_connection_failed),
+                        isConnecting = false
+                    )
+                }
+            }
+            .collect {
+                updateState { copy(gameState = it, isConnecting = false) }
+            }
     }
 
     private fun handleMove(row: Int, col: Int) {
@@ -65,12 +87,6 @@ class GameViewModel(
         }
     }
 
-    private fun updateGameState() = viewModelScope.launch {
-        gameState.collect { state ->
-            updateState { copy(gameState = state, isConnecting = false) }
-        }
-    }
-
     private fun observeOpponentConnection() {
         state
             .distinctUntilChangedBy { it.gameState.connectedPlayers }
@@ -81,7 +97,7 @@ class GameViewModel(
                     updateState {
                         copy(
                             isGameReady = false,
-                            message = "Waiting for an opponent..."
+                            message = UiText.Resource(R.string.waiting_for_opponent)
                         )
                     }
                 } else {

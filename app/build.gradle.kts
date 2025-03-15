@@ -27,7 +27,8 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
-        buildConfigField("String", "GAME_ADDRESS", apikeyProperties["GAME_ADDRESS"].toString())
+        buildConfigField("String", "HTTP_BASE_URL", apikeyProperties["HTTP_BASE_URL"].toString())
+        buildConfigField("String", "WS_URL", apikeyProperties["WS_URL"].toString())
     }
 
     buildTypes {

@@ -1,12 +1,14 @@
 package com.daisy.tictactoe.di
 
 import android.util.Log
+import com.daisy.tictactoe.BuildConfig
 import com.daisy.tictactoe.data.repository.KtorGameRepositoryImpl
 import com.daisy.tictactoe.domain.repository.GameRepository
 import com.daisy.tictactoe.presentation.GameViewModel
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
@@ -30,9 +32,12 @@ val appModule = module {
                         Log.d("daisy-ua", message)
                     }
                 }
-                level = LogLevel.ALL
+                level = LogLevel.INFO
             }
             install(WebSockets)
+            defaultRequest {
+                url(BuildConfig.HTTP_BASE_URL)
+            }
         }
     }
     singleOf(::KtorGameRepositoryImpl) bind GameRepository::class
