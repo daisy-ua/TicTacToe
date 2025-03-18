@@ -99,9 +99,24 @@ lint/tmp/
 .DS_Store
 /build
 /captures
-.externalNativeBuild
 .cxx
-local.properties
+
+
+
+.kotlin
+**/build/
+xcuserdata
+!src/**/build/
+.idea
+.fleet
+captures
+*.xcodeproj/*
+!*.xcodeproj/project.pbxproj
+!*.xcodeproj/xcshareddata/
+!*.xcodeproj/project.xcworkspace/
+!*.xcworkspace/contents.xcworkspacedata
+**/xcshareddata/WorkspaceSettings.xcsettings
+
 
 # Credentials
 apikey.properties
