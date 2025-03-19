@@ -2,7 +2,7 @@ package com.daisy.tictactoe.client
 
 actual object AppSecrets {
     actual val httpBaseUrl: String
-        get() = ""
+        get() = ApiKeyProperties.httpBaseUrl
     actual val wsUrl: String
-        get() = ""
+        get() = ApiKeyProperties.wsUrl
 }

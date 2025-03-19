@@ -6,13 +6,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.daisy.tictactoe.client.presentation.TicTacToeScreen
+import com.daisy.tictactoe.client.presentation.screen.TicTacToeScreen
 import com.daisy.tictactoe.client.ui.theme.TicTacToeTheme
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.KoinContext
 
 @Composable
-@Preview
 fun App() {
     KoinContext {
         TicTacToeTheme(darkTheme = true) {

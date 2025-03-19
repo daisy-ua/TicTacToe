@@ -1,12 +1,12 @@
 <resources>
-    <string name="app_name">TicTacToe</string>
+    <string name="app_name">Tic Tac Toe</string>
 
     <string name="connecting_to_server">Connecting to server…</string>
     <string name="invite_with_code">Invite friend with code</string>
     <string name="create_invitation">Create invitation</string>
     <string name="battle">Battle</string>
     <string name="player_won">Player %1$s won!\n</string>
-    <string name="draw">Draw!</string>
+    <string name="draw">Draw!\n</string>
     <string name="new_game_starts_soon">New game starts soon.</string>
     <string name="player_turn">Player %1$s turn</string>
     <string name="waiting_for_opponent">Waiting for an opponent…</string>

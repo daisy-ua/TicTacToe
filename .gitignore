@@ -121,3 +121,4 @@ captures
 # Credentials
 apikey.properties
 google-services.json
+ApiKeyProperties.kt

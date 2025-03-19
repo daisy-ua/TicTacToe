@@ -1,12 +1,12 @@
 package com.daisy.tictactoe.client.preview
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.tooling.preview.Preview
 import com.daisy.tictactoe.client.domain.model.GameState
 import com.daisy.tictactoe.client.domain.model.Player
 import com.daisy.tictactoe.client.presentation.GameUiState
-import com.daisy.tictactoe.client.presentation.TicTacToeScreenContent
+import com.daisy.tictactoe.client.presentation.screen.TicTacToeScreenContent
 import com.daisy.tictactoe.client.ui.theme.TicTacToeTheme
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Preview
 @Composable

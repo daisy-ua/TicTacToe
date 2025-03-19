@@ -106,11 +106,11 @@ dependencies {
 
 compose.desktop {
     application {
-        mainClass = "com.daisy.tictactoe.MainKt"
+        mainClass = "com.daisy.tictactoe.client.MainKt"
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "com.daisy.tictactoe"
+            packageName = "com.daisy.tictactoe.client"
             packageVersion = "1.0.0"
         }
     }
