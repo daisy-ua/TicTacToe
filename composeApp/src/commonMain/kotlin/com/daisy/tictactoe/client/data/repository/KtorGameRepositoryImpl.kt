@@ -1,16 +1,10 @@
 package com.daisy.tictactoe.client.data.repository
 
-import com.daisy.tictactoe.client.AppSecrets
+import com.daisy.tictactoe.client.data.utils.runCatchingResult
+import com.daisy.tictactoe.client.domain.datasource.GameDataSource
 import com.daisy.tictactoe.client.domain.model.GameState
 import com.daisy.tictactoe.client.domain.model.Move
 import com.daisy.tictactoe.client.domain.repository.GameRepository
-import io.ktor.client.HttpClient
-import io.ktor.client.plugins.websocket.webSocketSession
-import io.ktor.client.request.post
-import io.ktor.client.request.url
-import io.ktor.client.statement.bodyAsText
-import io.ktor.http.ContentType
-import io.ktor.http.contentType
 import io.ktor.websocket.Frame
 import io.ktor.websocket.WebSocketSession
 import io.ktor.websocket.close
@@ -22,47 +16,44 @@ import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
 
 class KtorGameRepositoryImpl(
-    private val client: HttpClient
+    private val dataSource: GameDataSource
 ) : GameRepository {
 
     private var session: WebSocketSession? = null
 
-    override suspend fun createRoom(): String? {
-        return client.post("${AppSecrets.httpBaseUrl}/room/create") {
-            contentType(ContentType.Application.Json)
-        }
-            .bodyAsText().let { responseBody ->
-                val jsonResponse = Json.parseToJsonElement(responseBody).jsonObject
-                jsonResponse["roomId"]?.jsonPrimitive?.content
-            }
+    override suspend fun createRoom(): Result<String> {
+        return dataSource.createRoom()
     }
 
-    override fun getGameStateStream(roomId: String): Flow<GameState> {
+    override fun getGameStateStream(roomId: String): Flow<Result<GameState>> {
         return flow {
-            session = client.webSocketSession {
-                url("${AppSecrets.wsUrl}/room/$roomId/game")
-            }
+            session = dataSource.getGameSession(roomId).also { result ->
+                if (result.isFailure) {
+                    emit(Result.failure(result.exceptionOrNull()!!))
+                    return@flow
+                }
+            }.getOrNull()
 
             val gameStates = session!!
                 .incoming
                 .consumeAsFlow()
                 .filterIsInstance<Frame.Text>()
-                .mapNotNull {
-                    Json.decodeFromString<GameState>(it.readText())
+                .mapNotNull { frame ->
+                    runCatchingResult {
+                        Json.decodeFromString<GameState>(frame.readText())
+                    }
                 }
 
             emitAll(gameStates)
         }
     }
 
-    override suspend fun sendAction(action: Move) {
-        session?.outgoing?.send(
-            Frame.Text("move#${Json.encodeToString(action)}")
-        )
+    override suspend fun sendAction(action: Move): Result<Unit> {
+        return session?.let { currentSession ->
+            dataSource.sendAction(currentSession, action)
+        } ?: Result.failure(IllegalStateException("WebSocket session not established"))
     }
 
     override suspend fun closeStream() {

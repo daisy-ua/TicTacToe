@@ -1,11 +1,15 @@
 package com.daisy.tictactoe.client.di
 
+import com.daisy.tictactoe.client.AppSecrets
+import com.daisy.tictactoe.client.data.datasource.KtorGameDataSourceImpl
 import com.daisy.tictactoe.client.data.repository.KtorGameRepositoryImpl
+import com.daisy.tictactoe.client.domain.datasource.GameDataSource
 import com.daisy.tictactoe.client.domain.repository.GameRepository
 import com.daisy.tictactoe.client.presentation.GameViewModel
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
@@ -40,11 +44,13 @@ val appModule = module {
                 level = LogLevel.INFO
             }
             install(WebSockets)
-//            defaultRequest {
-////                url(AppSecrets.httpBaseUrl)
-//            }
+            defaultRequest {
+                url(AppSecrets.httpBaseUrl)
+            }
         }
     }
+    singleOf(::KtorGameDataSourceImpl) bind GameDataSource::class
     singleOf(::KtorGameRepositoryImpl) bind GameRepository::class
+
     viewModelOf(::GameViewModel)
 }

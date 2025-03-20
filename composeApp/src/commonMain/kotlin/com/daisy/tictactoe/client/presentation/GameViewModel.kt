@@ -35,19 +35,28 @@ class GameViewModel(
     }
 
     private fun createRoom() = viewModelScope.launch {
-        val roomId = repository.createRoom()
-        updateState { copy(roomId = roomId) }
+        val result = repository.createRoom()
 
-        if (roomId == null) {
-            setEffect {
-                GameEffect.ShowToast(
-                    UiText.Resource(Res.string.error_cannot_parse_room_id)
-                )
+        result
+            .onSuccess {
+                val roomId = result.getOrNull()
+                updateState { copy(roomId = roomId) }
+
+                if (roomId == null) {
+                    setEffect {
+                        GameEffect.ShowToast(
+                            UiText.Resource(Res.string.error_cannot_parse_room_id)
+                        )
+                    }
+                    return@launch
+                }
+
+                joinRoom(roomId)
             }
-            return@launch
-        }
+            .onFailure {
+                updateState { copy(error = UiText.Plain(result.exceptionOrNull()?.message ?: "")) }
+            }
 
-        joinRoom(roomId)
     }
 
     private fun joinRoom(roomId: String) = viewModelScope.launch {
@@ -73,8 +82,11 @@ class GameViewModel(
                     )
                 }
             }
-            .collect {
-                updateState { copy(gameState = it, isConnecting = false) }
+            .collect { result ->
+                result
+                    .onSuccess {
+                        updateState { copy(gameState = it, isConnecting = false) }
+                    }
             }
     }
 

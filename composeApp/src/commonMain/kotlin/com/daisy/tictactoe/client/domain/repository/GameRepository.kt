@@ -6,11 +6,11 @@ import kotlinx.coroutines.flow.Flow
 
 interface GameRepository {
 
-    suspend fun createRoom(): String?
+    suspend fun createRoom(): Result<String>
 
-    fun getGameStateStream(roomId: String): Flow<GameState>
+    fun getGameStateStream(roomId: String): Flow<Result<GameState>>
 
-    suspend fun sendAction(action: Move)
+    suspend fun sendAction(action: Move): Result<Unit>
 
     suspend fun closeStream()
 }
