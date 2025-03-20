@@ -19,7 +19,7 @@ fun ConnectionErrorContent(
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = errorMessage.asString(),
+            text = errorMessage.asStringResource(),
             color = MaterialTheme.colorScheme.error
         )
     }

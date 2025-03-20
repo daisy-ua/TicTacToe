@@ -1,12 +1,9 @@
 package com.daisy.tictactoe.client
 
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
-import com.daisy.tictactoe.client.core.utils.LocalDimens
-import com.daisy.tictactoe.client.core.utils.PlatformDimens
 import com.daisy.tictactoe.client.di.initKoin
 import org.jetbrains.compose.resources.stringResource
 import tictactoeclient.composeapp.generated.resources.Res
@@ -28,8 +25,6 @@ fun main() = application {
 
         initKoin()
 
-        CompositionLocalProvider(LocalDimens provides PlatformDimens) {
-            App()
-        }
+        App()
     }
 }

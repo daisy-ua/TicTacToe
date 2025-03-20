@@ -13,7 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.daisy.tictactoe.client.core.utils.LocalDimens
+import com.daisy.tictactoe.client.core.utils.localprovider.LocalDimens
 import com.daisy.tictactoe.client.presentation.GameAction
 import com.daisy.tictactoe.client.presentation.GameUiState
 import org.jetbrains.compose.resources.stringResource

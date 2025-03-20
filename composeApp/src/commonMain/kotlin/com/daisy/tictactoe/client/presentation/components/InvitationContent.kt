@@ -21,7 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.unit.dp
-import com.daisy.tictactoe.client.core.utils.LocalDimens
+import com.daisy.tictactoe.client.core.utils.localprovider.LocalDimens
 import com.daisy.tictactoe.client.presentation.GameAction
 import com.daisy.tictactoe.client.presentation.GameUiState
 import org.jetbrains.compose.resources.stringResource
@@ -104,7 +104,7 @@ fun InvitationContent(
 
                     state.message?.let {
                         Text(
-                            text = it.asString(),
+                            text = it.asStringResource(),
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.primary
                         )
