@@ -22,7 +22,7 @@ fun TicTacToeScreenPreview() {
 
                 isGameReady = true,
 
-                message = null,
+//                message = null,
 
                 gameState = GameState(
                     connectedPlayers = listOf(Player.O, Player.X),

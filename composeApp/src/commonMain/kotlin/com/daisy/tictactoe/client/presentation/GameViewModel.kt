@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 import tictactoeclient.composeapp.generated.resources.Res
 import tictactoeclient.composeapp.generated.resources.error_cannot_parse_room_id
 import tictactoeclient.composeapp.generated.resources.error_connection_failed
-import tictactoeclient.composeapp.generated.resources.waiting_for_opponent
+import tictactoeclient.composeapp.generated.resources.error_invalid_room_id
 
 
 class GameViewModel(
@@ -54,7 +54,7 @@ class GameViewModel(
                 joinRoom(roomId)
             }
             .onFailure {
-                updateState { copy(error = UiText.Plain(result.exceptionOrNull()?.message ?: "")) }
+                setEffectOnFailure(it.message)
             }
 
     }
@@ -87,6 +87,18 @@ class GameViewModel(
                     .onSuccess {
                         updateState { copy(gameState = it, isConnecting = false) }
                     }
+                    .onFailure { error ->
+                        val message = error.message?.let {
+                            UiText.Plain(it)
+                        } ?: UiText.Resource(Res.string.error_invalid_room_id)
+                        setEffect { GameEffect.ShowToast(message) }
+                        updateState {
+                            copy(
+                                isConnecting = false,
+                                roomId = null
+                            )
+                        }
+                    }
             }
     }
 
@@ -98,7 +110,11 @@ class GameViewModel(
         if (isMoveInvalid) return
 
         viewModelScope.launch {
-            repository.sendAction(Move(row, col))
+            val result = repository.sendAction(Move(row, col))
+            result
+                .onFailure {
+                    setEffect { GameEffect.ShowToast(UiText.Resource(Res.string.error_connection_failed)) }
+                }
         }
     }
 
@@ -112,14 +128,14 @@ class GameViewModel(
                     updateState {
                         copy(
                             isGameReady = false,
-                            message = UiText.Resource(Res.string.waiting_for_opponent)
+                            isWaitingForOpponent = true
                         )
                     }
                 } else {
                     updateState {
                         copy(
-                            isGameReady = true,
-                            message = null
+//                            isGameReady = true,
+                            isWaitingForOpponent = false
                         )
                     }
                 }
@@ -132,5 +148,9 @@ class GameViewModel(
         viewModelScope.launch {
             repository.closeStream()
         }
+    }
+
+    private fun setEffectOnFailure(message: String?) {
+        setEffect { GameEffect.ShowToast(UiText.Plain(message ?: "Unknown Error")) }
     }
 }

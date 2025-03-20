@@ -30,6 +30,7 @@ import tictactoeclient.composeapp.generated.resources.battle
 import tictactoeclient.composeapp.generated.resources.connecting_to_server
 import tictactoeclient.composeapp.generated.resources.create_invitation
 import tictactoeclient.composeapp.generated.resources.invite_with_code
+import tictactoeclient.composeapp.generated.resources.waiting_for_opponent
 
 
 @Composable
@@ -71,7 +72,7 @@ fun InvitationContent(
                         onValueChange = {
                             passcode = it
                         },
-                        enabled = state.message == null,
+                        enabled = !state.isWaitingForOpponent,
                         shape = RoundedCornerShape(50.dp),
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -80,7 +81,7 @@ fun InvitationContent(
                         horizontalArrangement = Arrangement.spacedBy(dimens.buttonSpacing),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .alpha(if (state.message == null) 1f else 0f),
+                            .alpha(if (!state.isWaitingForOpponent) 1f else 0f),
                     ) {
                         OutlinedButton(
                             onClick = { onAction(GameAction.CreateRoom) },
@@ -102,9 +103,9 @@ fun InvitationContent(
                         }
                     }
 
-                    state.message?.let {
+                    if (state.isWaitingForOpponent) {
                         Text(
-                            text = it.asStringResource(),
+                            text = stringResource(Res.string.waiting_for_opponent),
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.primary
                         )

@@ -6,6 +6,8 @@ import com.daisy.tictactoe.client.data.repository.KtorGameRepositoryImpl
 import com.daisy.tictactoe.client.domain.datasource.GameDataSource
 import com.daisy.tictactoe.client.domain.repository.GameRepository
 import com.daisy.tictactoe.client.presentation.GameViewModel
+import io.github.aakira.napier.DebugAntilog
+import io.github.aakira.napier.Napier
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -24,6 +26,8 @@ import org.koin.dsl.module
 
 
 fun initKoin() {
+    Napier.base(DebugAntilog())
+
     startKoin {
         modules(appModule)
     }
@@ -38,10 +42,10 @@ val appModule = module {
             install(Logging) {
                 logger = object : Logger {
                     override fun log(message: String) {
-                        println(message)
+                        Napier.d(message)
                     }
                 }
-                level = LogLevel.INFO
+                level = LogLevel.ALL
             }
             install(WebSockets)
             defaultRequest {

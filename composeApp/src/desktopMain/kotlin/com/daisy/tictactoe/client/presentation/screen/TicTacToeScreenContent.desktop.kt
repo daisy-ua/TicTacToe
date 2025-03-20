@@ -94,8 +94,6 @@ private fun TicTacToeScreenContentPreview() {
 
                 isGameReady = true,
 
-                message = null,
-
                 gameState = GameState(
                     connectedPlayers = listOf(Player.O, Player.X),
                 )

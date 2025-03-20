@@ -5,6 +5,8 @@ import com.daisy.tictactoe.client.domain.datasource.GameDataSource
 import com.daisy.tictactoe.client.domain.model.GameState
 import com.daisy.tictactoe.client.domain.model.Move
 import com.daisy.tictactoe.client.domain.repository.GameRepository
+import io.ktor.client.plugins.websocket.DefaultClientWebSocketSession
+import io.ktor.websocket.CloseReason
 import io.ktor.websocket.Frame
 import io.ktor.websocket.WebSocketSession
 import io.ktor.websocket.close
@@ -47,6 +49,11 @@ class KtorGameRepositoryImpl(
                 }
 
             emitAll(gameStates)
+
+            val closeReason = (session as DefaultClientWebSocketSession).closeReason.await()
+            if (closeReason?.code != CloseReason.Codes.NORMAL.code) {
+                emit(Result.failure(Throwable(closeReason?.message)))
+            }
         }
     }
 

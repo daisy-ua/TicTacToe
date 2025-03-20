@@ -17,5 +17,5 @@ data class GameUiState(
 
     val isGameReady: Boolean = false,
 
-    val message: UiText? = null
+    val isWaitingForOpponent: Boolean = false,
 ) : UiState
