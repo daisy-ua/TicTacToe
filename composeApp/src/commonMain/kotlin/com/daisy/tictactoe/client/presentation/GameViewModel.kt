@@ -134,7 +134,7 @@ class GameViewModel(
                 } else {
                     updateState {
                         copy(
-//                            isGameReady = true,
+                            isGameReady = true,
                             isWaitingForOpponent = false
                         )
                     }
