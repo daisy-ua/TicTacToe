@@ -1,13 +1,13 @@
-# TicTacToe - Android Client
+# Tic Tac Toe Game - Kotlin Multiplatform Client
 
 ## Overview
 
-This is the Android client for the Tic Tac Toe game, built with Jetpack Compose and Kotlin, that supports multiplayer gameplay.
+This is a simple multiplayer Tic Tac Toe game built with Kotlin Multiplatform (KMP), supporting both Android and Desktop platforms using Compose Multiplatform (CMP).
 
 ## Features
 
 * Create and join rooms.
-
 * Real-time gameplay.
-
-* Handles reconnections and network changes.
+* Handle reconnections and network changes.
+* Same codebase for Android and Desktop.
+* Clean architecture with shared logic between platforms.
